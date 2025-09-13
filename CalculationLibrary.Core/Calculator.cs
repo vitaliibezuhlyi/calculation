@@ -2,13 +2,30 @@
 
 public class Calculator
 {
-    public int Add(int a, int b)
+    public int Add(params int[] numbers)
     {
-        return a + b;
+        int sum = 0;
+        foreach (var number in numbers)
+        {
+            sum += number;
+        }
+        
+        return sum;
     }
     
-    public int Subtract(int a, int b)
+    public int Subtract(params int[] numbers)
     {
-        return a - b;
+        if (numbers.Length == 0)
+        {
+            return 0;
+        }
+        
+        var result = numbers[0];
+        for (int i = 1; i < numbers.Length; i++)
+        {
+            result -= numbers[i];
+        }
+        
+        return result;
     }
 }
