@@ -69,7 +69,8 @@ jobs:
       - name: Pack
         run: |
           mkdir -p artifacts
-          dotnet pack -c Release --no-build \
+          dotnet pack src/CalculationLibrary.Core/CalculationLibrary.Core.csproj \
+            -c Release --no-build \
             /p:ContinuousIntegrationBuild=true \
             /p:PackageVersion=${{ steps.version.outputs.ver }} \
             /p:IncludeSymbols=true \
