@@ -2,9 +2,9 @@
 
 public class Calculator
 {
-    public int Add(params int[] numbers)
+    public double Add(params double[] numbers)
     {
-        int sum = 0;
+        double sum = 0;
         foreach (var number in numbers)
         {
             sum += number;
