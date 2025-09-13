@@ -1,10 +1,6 @@
 name: ci
 
 on:
-  pull_request:
-    branches: [ main ]
-    types: [opened, synchronize, reopened]
-
   pull_request_target:
     branches: [ main ]
     types: [closed]
@@ -16,32 +12,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build_test:
-    name: Build & Test (.NET 9)
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - name: Checkout PR code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.0.x'
-
-      - name: Restore
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build -c Release -warnaserror /p:ContinuousIntegrationBuild=true
-
-      - name: Test
-        run: dotnet test -c Release --no-build --verbosity normal
-
   pack_publish:
-    name: Pack & Publish to NuGet
+    name: Build, Test, Pack & Publish (.NET 9)
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'pull_request_target' &&
@@ -61,11 +33,12 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
+          cache: true
 
       - name: Restore
         run: dotnet restore
 
-      - name: Build
+      - name: Build (Release, CI)
         run: dotnet build -c Release -warnaserror /p:ContinuousIntegrationBuild=true
 
       - name: Test
