@@ -27,7 +27,7 @@ jobs:
           cache: true
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore --use-lock-file
 
       - name: Build
         run: dotnet build -c Release -warnaserror /p:ContinuousIntegrationBuild=true
@@ -55,7 +55,7 @@ jobs:
           cache: true
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore --use-lock-file
 
       - name: Derive version from tag
         id: version
