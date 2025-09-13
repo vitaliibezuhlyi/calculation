@@ -4,10 +4,6 @@ on:
   pull_request:
     branches: [ main ]
   
-  push:
-    tags:
-      - 'v*.*.*'
-  
   workflow_dispatch:
 
 jobs:
@@ -38,7 +34,7 @@ jobs:
     name: Pack & Publish to NuGet
     needs: build_test
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')  # only on release tags
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
     steps:
@@ -55,11 +51,10 @@ jobs:
       - name: Restore
         run: dotnet restore
 
-      - name: Derive version from tag
+      - name: Extract version from csproj
         id: version
         run: |
-          # github.ref_name is like v1.2.3; strip the leading 'v'
-          VER="${GITHUB_REF_NAME#v}"
+          VER=$(grep -oP '<Version>\K[^<]+' CalculationLibrary.Core/CalculationLibrary.Core.csproj)
           echo "ver=$VER" >> "$GITHUB_OUTPUT"
 
       - name: Pack
@@ -88,7 +83,5 @@ jobs:
             --skip-duplicate
           dotnet nuget push "artifacts/*.snupkg" \
             --api-key "$NUGET_API_KEY" \
-            --source https://api.nuget.org/v3/index.json \
-            --skip-duplicate
             --source https://api.nuget.org/v3/index.json \
             --skip-duplicate
