@@ -24,10 +24,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-          cache: true
 
       - name: Restore
-        run: dotnet restore --use-lock-file
+        run: dotnet restore
 
       - name: Build
         run: dotnet build -c Release -warnaserror /p:ContinuousIntegrationBuild=true
@@ -52,10 +51,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-          cache: true
 
       - name: Restore
-        run: dotnet restore --use-lock-file
+        run: dotnet restore
 
       - name: Derive version from tag
         id: version
@@ -90,5 +88,7 @@ jobs:
             --skip-duplicate
           dotnet nuget push "artifacts/*.snupkg" \
             --api-key "$NUGET_API_KEY" \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
             --source https://api.nuget.org/v3/index.json \
             --skip-duplicate

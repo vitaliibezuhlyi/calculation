@@ -28,4 +28,20 @@ public class Calculator
         
         return result;
     }
+    
+    public int Multiply(params int[] numbers)
+    {
+        if (numbers.Length == 0)
+        {
+            return 0;
+        }
+        
+        var result = 1;
+        foreach (var number in numbers)
+        {
+            result *= number;
+        }
+        
+        return result;
+    }
 }
