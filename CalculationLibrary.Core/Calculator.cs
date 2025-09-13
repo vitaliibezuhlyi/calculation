@@ -54,4 +54,9 @@ public class Calculator
 
         return (double)dividend / divisor;
     }
+
+    public double Power(double baseNumber, double exponent)
+    {
+        return Math.Pow(baseNumber, exponent);
+    }
 }
