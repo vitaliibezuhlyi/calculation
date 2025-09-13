@@ -82,6 +82,17 @@ jobs:
           name: nuget-artifacts
           path: artifacts/
 
+      - name: Verify NuGet API Key
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if [ -z "$NUGET_API_KEY" ]; then
+            echo "ERROR: NUGET_API_KEY secret is not set or is empty"
+            exit 1
+          fi
+          echo "API Key is present. First 4 chars: ${NUGET_API_KEY:0:4}***"
+          echo "API Key length: ${#NUGET_API_KEY} characters"
+
       - name: Push to NuGet
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
