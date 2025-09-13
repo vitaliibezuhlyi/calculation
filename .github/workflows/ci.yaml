@@ -3,11 +3,17 @@ name: ci
 on:
   pull_request:
     branches: [ main ]
-  
-  push:
+    types: [opened, synchronize, reopened]
+
+  pull_request_target:
     branches: [ main ]
-  
+    types: [closed]
+
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build_test:
@@ -15,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - name: Checkout
+      - name: Checkout PR code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -37,13 +43,18 @@ jobs:
   pack_publish:
     name: Pack & Publish to NuGet
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: >
+      github.event_name == 'pull_request_target' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main'
     permissions:
       contents: read
     steps:
-      - name: Checkout
+      - name: Checkout merged main
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Setup .NET SDK
@@ -62,6 +73,7 @@ jobs:
 
       - name: Extract version from csproj
         id: version
+        shell: bash
         run: |
           VER=$(grep -oP '<Version>\K[^<]+' CalculationLibrary.Core/CalculationLibrary.Core.csproj)
           echo "ver=$VER" >> "$GITHUB_OUTPUT"
@@ -82,17 +94,6 @@ jobs:
         with:
           name: nuget-artifacts
           path: artifacts/
-
-      - name: Verify NuGet API Key
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        run: |
-          if [ -z "$NUGET_API_KEY" ]; then
-            echo "ERROR: NUGET_API_KEY secret is not set or is empty"
-            exit 1
-          fi
-          echo "API Key is present. First 4 chars: ${NUGET_API_KEY:0:4}***"
-          echo "API Key length: ${#NUGET_API_KEY} characters"
 
       - name: Push to NuGet
         env:
