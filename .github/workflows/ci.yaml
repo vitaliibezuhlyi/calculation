@@ -4,10 +4,6 @@ on:
   pull_request:
     branches: [ main ]
   
-  push:
-    tags:
-      - 'v*.*.*'
-  
   workflow_dispatch:
 
 jobs:
@@ -38,7 +34,6 @@ jobs:
     name: Pack & Publish to NuGet
     needs: build_test
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')  # only on release tags
     permissions:
       contents: read
     steps:
