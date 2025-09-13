@@ -59,4 +59,14 @@ public class Calculator
     {
         return Math.Pow(baseNumber, exponent);
     }
+
+    public double SquareRoot(double number)
+    {
+        if (number < 0)
+        {
+            throw new ArgumentException("Cannot compute the square root of a negative number.");
+        }
+
+        return Math.Sqrt(number);
+    }
 }
